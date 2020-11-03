@@ -1,0 +1,12 @@
+app_name: hello_webapp
+repo_url: git@github.com:mhfowler/alembic_flask_ansible_ec2_template.git
+repo_remote: origin
+repo_branch: master
+src_dir: /srv/hello_webapp
+log_dir: /srv/log
+aws_key_name: maxhfowler_dec8
+aws_security_group: citigroup_apps
+aws_instance_name: aws_default
+aws_key_location: /Users/maxfowler/Desktop/cs/ec2/dec8/maxhfowler_dec8.pem
+aws_subnet: subnet-1b647733
+prod_url: http://52.91.169.141/
