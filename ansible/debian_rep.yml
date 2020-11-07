@@ -1,0 +1,24 @@
+---
+- name: ensure debian rep directory
+  action: file dest="{{debian_rep_dir}}" state=directory
+
+- name: create debian distributions file
+  template:
+    src: debian/distributions
+    dest: "{{debian_rep_dir}}/conf/distributions"
+
+- name: create debian options file
+  action: template src=debian/options dest="{{debian_rep_dir}}/conf/options"
+
+- name: create debian override file
+  action: template src=debian/override.buster dest="{{debian_rep_dir}}/conf/override.buster"
+
+- name: export public gpg key to be served by web server
+  command: gpg --armor --output {{web_dir}}/peach_pub.gpg --export {{gpg_key_id}}
+  args:
+    creates: "{{web_dir}}/peach_pub.gpg"
+
+# couldn't easily figure out how to automate gpg key creation, so this step can be manual
+
+- name: install reprepro
+  apt: pkg=reprepro

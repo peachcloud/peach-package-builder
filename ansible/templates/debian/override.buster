@@ -1,0 +1,4 @@
+{% for service in services %}
+{{service}} Priority        optional
+{{service}} Section         net
+{% endfor %}

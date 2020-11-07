@@ -19,12 +19,6 @@
           - notplants
           - glyph
 
-    - name: copy over ssh keys for deploy purposes
-      action: copy src={{item.from}} dest={{item.to}} mode={{item.mode}}
-      loop:
-        - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
-        - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
-
     - name: ensure log directory
       action: file dest={{log_dir}} state=directory
 
@@ -39,5 +33,13 @@
         pkg:
           - git
           - nginx
+          - curl
+          - build-essential
+
+    - name: install rust by rustup
+      shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+    - name: install cargo deb
+      shell: /root/.cargo/bin/cargo install cargo-deb
 
 
