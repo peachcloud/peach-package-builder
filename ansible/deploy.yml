@@ -27,21 +27,9 @@
 
     - name: tasks for creating debian repository
       include_tasks: debianrep.yml
-      args:
-        apply:
-          tags:
-            - debian
-      tags:
-        - debian
 
     - name: tasks for devdocs
-      include_tasks:
-        file: devdocs.yml
-        apply:
-          tags:
-            - devdocs
-      tags:
-        - devdocs
+      include_tasks: devdocs.yml
 
   handlers:
     - name: restart nginx
