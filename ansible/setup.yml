@@ -38,8 +38,15 @@
 
     - name: install rust by rustup
       shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
+      args:
+        creates: /root/.cargo/bin/rustc
 
     - name: install cargo deb
       shell: /root/.cargo/bin/cargo install cargo-deb
+      args:
+        creates: /root/.cargo/bin/cargo-deb
+
+    - name: copy main nginx config
+      action: template src=nginx/nginx.conf dest=/etc/nginx/nginx.conf
 
 

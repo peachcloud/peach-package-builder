@@ -22,3 +22,10 @@
 
 - name: install reprepro
   apt: pkg=reprepro
+
+- name: install toolchain for cross-compilation
+  command: /root/.cargo/bin/rustup toolchain install nightly-aarch64-unknown-linux-gnu
+
+- name: install aarch644 gcc
+  apt: pkg=gcc-aarch64-linux-gnu
+

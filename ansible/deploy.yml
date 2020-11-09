@@ -16,12 +16,7 @@
     - name: create nginx site configs
       action: template src={{item.template}} dest=/etc/nginx/sites-enabled/{{item.name}}
       loop:
-        - { template: 'templates/nginx_peach.conf', name: 'peach.conf' }
-      notify:
-        - restart nginx
-
-    - name: copy index.html
-      action: template src=index.html dest="{{web_dir}}/index.html"
+        - { template: 'templates/nginx/nginx_devdocs.conf', name: 'devdocs.conf' }
       notify:
         - restart nginx
 
@@ -31,13 +26,22 @@
         - restart nginx
 
     - name: tasks for creating debian repository
-      include_tasks: debian_rep.yml
+      include_tasks: debianrep.yml
       args:
         apply:
           tags:
             - debian
       tags:
         - debian
+
+    - name: tasks for devdocs
+      include_tasks:
+        file: devdocs.yml
+        apply:
+          tags:
+            - devdocs
+      tags:
+        - devdocs
 
   handlers:
     - name: restart nginx
