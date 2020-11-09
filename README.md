@@ -9,11 +9,15 @@ using ansible 2.9.3
 [instructions to install ansible locally](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 # setup
-`ansible-playbook -i ansible/hosts ansible/setup.yml`
+
+`mkdir ansible/secret_files`
+(and make sure you get the required secret_files which are hosted off git)
 
 gpg key creation is still not automated,
 so after creating the server generate a gpg key on the server,
 put the gpg_key_id into vars.yaml and then run setup
+
+`ansible-playbook -i ansible/hosts ansible/setup.yml`
 
 
 # deploy
