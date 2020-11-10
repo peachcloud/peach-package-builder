@@ -1,12 +1,13 @@
-from peach_vps_scripts.vars import VARS
+from vars import VARS
 
 import os
 import jinja2
 import subprocess
 
-PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+print('PROJECT_PATH: {}'.format(PROJECT_PATH))
 
-template_path = os.path.join(PROJECT_PATH, 'templates')
+template_path = os.path.join(PROJECT_PATH, 'conf/templates')
 template_loader = jinja2.FileSystemLoader(searchpath=template_path)
 template_env = jinja2.Environment(loader=template_loader)
 
@@ -19,7 +20,10 @@ def render_template(src, dest, template_vars=None):
     :return: None
     """
     template = template_env.get_template(src)
-    template_vars.update(VARS)
+    if template_vars:
+        template_vars.update(VARS)
+    else:
+        template_vars = VARS
     output_text = template.render(template_vars=template_vars)
     if os.path.exists(dest):
         os.remove(dest)
