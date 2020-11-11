@@ -1,9 +1,10 @@
 app_name: peach-vps
 log_dir: /srv/log
 src_dir: /srv/src
+automation_dir: /srv/automation
 web_dir: /srv/www
 debian_rep_dir: /srv/www/repos/apt/debian
-gpg_key_id: E62CD13A85763FCEC3EDBA8EA98440817F1A3CE5
+gpg_key_id: 74A8D514053AE40F15C407E5D5233F944CCA2DF5
 services:
   - peach-oled
   - peach-stats

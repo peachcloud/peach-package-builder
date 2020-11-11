@@ -1,2 +1,2 @@
 [vps]
-159.89.5.141 ansible_ssh_user=root ansible_ssh_private_key_file=ansible/secret_files/do_rsa
+46.101.107.168 ansible_ssh_user=root ansible_ssh_private_key_file=/Users/maxfowler/.ssh/peach_rsa

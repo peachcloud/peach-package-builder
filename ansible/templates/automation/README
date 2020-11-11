@@ -1,0 +1,7 @@
+Automation-related directories are stored in this directory.
+
+For example, bare Git Hooks directories and staging directories for automating the build and deployment of peach-devdocs to docs.peachcloud.org.
+
+See https://github.com/peachcloud/peach-devdocs/blob/master/GITHOOK_DEPLOYMENT.md for more info.
+
+In the future, this directory may also be home to automation for release builds and deb file builds.

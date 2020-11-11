@@ -3,3 +3,4 @@ secret*
 deploy.sh
 setup.sh
 ssh.sh
+ansible/test.yml

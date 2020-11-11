@@ -1,20 +1,20 @@
 ---
 - name: ensure devdocs_bare
-  action: file dest={{src_dir}}/devdocs_bare state=directory
+  action: file dest={{automation_dir}}/devdocs_bare state=directory
 
 - name: initialize devdocs_bare git repo
-  command: git init --bare {{src_dir}}/devdocs_bare
+  command: git init --bare {{automation_dir}}/devdocs_bare
   args:
     creates: '{{src_dir}}/devdocs_bare/.git'
 
 - name: ensure devdocs_build
-  action: file dest={{src_dir}}/devdocs_build state=directory
+  action: file dest={{automation_dir}}/devdocs_build state=directory
 
 - name: ensure git hooks directory
-  action: file dest={{src_dir}}/devdocs_bare/hooks state=directory
+  action: file dest={{automation_dir}}/devdocs_bare/hooks state=directory
 
 - name: copy devdocs githook
-  action: template src=devdocs/git-post-receive dest="{{src_dir}}/devdocs_bare/hooks/post-receive" mode='770'
+  action: template src=devdocs/git-post-receive dest="{{automation_dir}}/devdocs_bare/hooks/post-receive" mode='770'
 
 - name: ensure devdocs web directory
   action: file dest={{web_dir}}/docs:peachcloud:org/html state=directory
@@ -23,4 +23,9 @@
   shell: /root/.cargo/bin/cargo install mdbook
   args:
     creates: /root/.cargo/bin/mdbook
+
+- name: create devdocs nginx site config
+  action: template src=templates/devdocs/nginx_devdocs.conf dest=/etc/nginx/sites-enabled/devdocs.conf
+  notify:
+    - restart nginx
 

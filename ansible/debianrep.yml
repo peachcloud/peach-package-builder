@@ -2,6 +2,9 @@
 - name: ensure debian rep directory
   action: file dest="{{debian_rep_dir}}" state=directory
 
+- name: ensure debian rep conf directory
+  action: file dest="{{debian_rep_dir}}/conf" state=directory
+
 - name: create debian distributions file
   template:
     src: debian/distributions
@@ -13,12 +16,13 @@
 - name: create debian override file
   action: template src=debian/override.buster dest="{{debian_rep_dir}}/conf/override.buster"
 
-- name: export public gpg key to be served by web server
-  command: gpg --armor --output {{web_dir}}/peach_pub.gpg --export {{gpg_key_id}}
-  args:
-    creates: "{{web_dir}}/peach_pub.gpg"
-
 # couldn't easily figure out how to automate gpg key creation, so this step can be manual
+# gpg --gen-key
+
+- name: export public gpg key to be served by web server
+  command: gpg --armor --output {{web_dir}}/repos/apt/peach_pub.gpg --export {{gpg_key_id}}
+  args:
+    creates: "{{web_dir}}/repos/apt/peach_pub.gpg"
 
 - name: install reprepro
   apt: pkg=reprepro
@@ -28,4 +32,9 @@
 
 - name: install aarch644 gcc
   apt: pkg=gcc-aarch64-linux-gnu
+
+- name: create debian repo nginx site config
+  action: template src=templates/debian/nginx_debian.conf dest=/etc/nginx/sites-enabled/debianrep.conf
+  notify:
+    - restart nginx
 

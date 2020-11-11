@@ -1,0 +1,5 @@
+Welcome to the PeachCloud VPS.
+
+Users with membership to the `peach` group can write to this directory (`/srv/peachcloud`).
+
+All PeachCloud-related assets are to be stored in this directory.

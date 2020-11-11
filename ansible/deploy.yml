@@ -5,31 +5,32 @@
       tags:
         - always
 
-    - name: deploy code from github
+    - name: deploy microservices code from github
       git: repo={{item.repo_url}} dest={{item.destination}} remote={{item.remote}} version={{item.branch}} accept_hostkey=yes
       loop:
-        - { repo_url: 'https://github.com/peachcloud/peach-vps.git', remote: 'main', branch: 'main', destination: '{{src_dir}}/peach-vps' }
         - { repo_url: 'https://github.com/peachcloud/peach-web.git', remote: 'main', branch: 'main', destination: '{{src_dir}}/peach-web' }
         - { repo_url: 'https://github.com/peachcloud/peach-oled.git', remote: 'main', branch: 'main', destination: '{{src_dir}}/peach-oled' }
         - { repo_url: 'https://github.com/peachcloud/peach-stats.git', remote: 'main', branch: 'main', destination: '{{src_dir}}/peach-stats' }
-
-    - name: create nginx site configs
-      action: template src={{item.template}} dest=/etc/nginx/sites-enabled/{{item.name}}
-      loop:
-        - { template: 'templates/nginx/nginx_devdocs.conf', name: 'devdocs.conf' }
-      notify:
-        - restart nginx
-
-    - name: restart server and webapp
-      command: /bin/true
-      notify:
-        - restart nginx
 
     - name: tasks for creating debian repository
       include_tasks: debianrep.yml
 
     - name: tasks for devdocs
       include_tasks: devdocs.yml
+
+    - name: ensure automation folder
+      action: file dest=/srv/automation state=directory
+
+    - name: deploy code for automation
+      git: repo=https://github.com/peachcloud/peach-vps.git dest={{automation_dir}}/peach-vps remote=main version=main accept_hostkey=yes
+
+    - name: copy welcome file
+      template: src=welcome dest=/srv/welcome
+
+    - name: restart nginx
+      command: /bin/true
+      notify:
+        - restart nginx
 
   handlers:
     - name: restart nginx
