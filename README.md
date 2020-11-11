@@ -10,12 +10,14 @@ using ansible 2.9.3
 
 # setup
 
+locally run:
 `mkdir ansible/secret_files`
 (and make sure you get the required secret_files which are hosted off git)
 
 gpg key creation is still not automated,
 so after creating the server generate a gpg key on the server,
-put the gpg_key_id into vars.yaml and then run setup
+`gpg --gen-key`
+put the gpg_key_id into vars.yaml and then run setup locally:
 
 `ansible-playbook -i ansible/hosts ansible/setup.yml`
 
@@ -27,12 +29,18 @@ put the gpg_key_id into vars.yaml and then run setup
 # building releases (to be automated later)
 
 ## building for arm64
-`cd /srv/src/peach-oled
+```cd /srv/src/peach-oled
 cargo-deb
 cd /srv/www/repos/apt/debian
-reprepro includedeb buster /srv/src/peach-oled/target/debian/peach-oled_0.1.0_amd64.deb`
+reprepro includedeb buster /srv/src/peach-oled/target/debian/peach-oled_0.1.0_amd64.deb
+```
 
 ## building for aarch64
-`cd /srv/src/peach-oled
+```cd /srv/src/peach-oled
 cargo build --release --target=aarch64-unknown-linux-gnu
-CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc cargo-deb --release --target=aarch64-unknown-linux-gnu`
+CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc cargo-deb --release --target=aarch64-unknown-linux-gnu
+```
+
+# misc
+based off this tutorial:
+https://wiki.debian.org/DebianRepository/SetupWithReprepro
