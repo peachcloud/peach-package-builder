@@ -42,7 +42,7 @@ for folder in folders:
         os.makedirs(folder)
 
 print("[ INSTALLING RUST ]")
-if os.path.exists('/root/.cargo/bin/rustc'):
+if not os.path.exists('/root/.cargo/bin/rustc'):
     first_command = subprocess.Popen(["curl", "https://sh.rustup.rs", "-sSf"], stdout=subprocess.PIPE)
     output = subprocess.check_output(["sh", "-s", "--", "-y"], stdin=first_command.stdout)
     first_command.wait()
@@ -50,6 +50,7 @@ if os.path.exists('/root/.cargo/bin/rustc'):
 print("[ INSTALLING CARGO PACKAGES ]")
 cargo_install("cargo-deb")
 
+print("[ COPYING NGINX CONFIG ]")
 render_template(src='nginx/nginx.conf', dest='/etc/nginx/nginx.conf')
 
 

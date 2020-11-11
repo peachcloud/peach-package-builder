@@ -1,5 +1,3 @@
-from vars import VARS
-
 import os
 import jinja2
 import subprocess
@@ -20,17 +18,12 @@ def render_template(src, dest, template_vars=None):
     :return: None
     """
     template = template_env.get_template(src)
-    if template_vars:
-        template_vars.update(VARS)
-    else:
-        template_vars = VARS
+    if not template_vars:
+        template_vars= {}
     output_text = template.render(template_vars=template_vars)
     if os.path.exists(dest):
         os.remove(dest)
     with open(dest, 'w') as f:
         f.write(output_text)
 
-
-def cargo_install(package):
-    subprocess.call(['/root/.cargo/bin/cargo', 'install', package])
 
