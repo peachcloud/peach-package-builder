@@ -3,17 +3,17 @@ from utils import render_template
 import subprocess
 import os
 
-
 INITIALIZE_DEBIAN_REPO = True
 
-MICROSERVICES_SRC_DIR = "/srv/peachcloud/src"
+MICROSERVICES_SRC_DIR = "/srv/peachcloud/automation/microservices"
 WEB_DIR = "/var/www/"
 APT_DIR = "/var/www/repos/apt"
 DEBIAN_REPO_DIR = "/var/www/repos/apt/debian"
 DEBIAN_REPO_CONF_DIR = "/var/www/repos/apt/debian/conf"
 
 # before running this script run `gpg --gen-key` on the server, and put the key id here
-GPG_KEY_ID = "E62CD13A85763FCEC3EDBA8EA98440817F1A3CE5",
+# `gpg --list-keys`
+GPG_KEY_ID = "4ACEF251EA3E091167E8F03EBF69A52BE3565476"
 
 SERVICES = [
     {"name": "peach-oled", "repo_url": "https://github.com/peachcloud/peach-oled.git"},
@@ -38,10 +38,12 @@ if INITIALIZE_DEBIAN_REPO:
         first_command.wait()
 
     print("[ INSTALLING CARGO-DEB ]")
-    subprocess.call(['cargo', 'install', 'cargo-deb'])
+    if not os.path.exists("/root/.cargo/bin/cargo-deb"):
+        subprocess.call(["/root/.cargo/bin/cargo", "install", "cargo-deb"])
 
     print("[ INSTALL TOOLCHAIN FOR CROSS-COMPILATION ]")
-    subprocess.call(['rustup', 'toolchain', 'install', 'nightly-aarch64-unknown-linux-gnu'])
+    subprocess.call(["/root/.cargo/bin/rustup", "target", "add", "aarch64-unknown-linux-gnu"])
+    subprocess.call(["/root/.cargo/bin/rustup", "toolchain", "install", "nightly-aarch64-unknown-linux-gnu"])
 
     print("[ PULLING MICROSERVICES CODE FROM GITHUB ]")
     for service in SERVICES:
@@ -76,7 +78,8 @@ if INITIALIZE_DEBIAN_REPO:
 
     print("[ EXPORTING PUBLIC GPG KEY ]")
     output_path = "{}/peach_pub.gpg".format(APT_DIR)
-    subprocess.call(["gpg", "--armor", "--output", output_path, "--export", GPG_KEY_ID])
+    if not os.path.exists(output_path):
+        subprocess.call(["gpg", "--armor", "--output", output_path, "--export", GPG_KEY_ID])
 
     print("[ COPYING NGINX CONFIG ]")
     render_template(
@@ -91,15 +94,15 @@ if INITIALIZE_DEBIAN_REPO:
 # below is code for updating the microservices, building the microservices,
 # and adding them to the debian repo
 for service in SERVICES:
-    service_name = service['name']
+    service_name = service["name"]
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
     print("[ BUILIDING SERVICE {} ]".format(service_name))
-    subprocess.call("cd {} && git pull;".format(service_path))
-    subprocess.call("cd {} && cargo deb --target aarch64-unknown-linux-gnu;".format(service_path))
-    deb_path = '?'
-    subprocess.call("cd {debian_dir} && reprepro includedeb buster {deb_path}".format(
+    subprocess.call(["git", "pull"], cwd=service_path)
+    debian_package_path = str(subprocess.check_output(["/root/.cargo/bin/cargo", "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path))
+    print('OUTPUT: {}'.format(debian_package_path))
+    subprocess.call("reprepro includedeb buster {deb_path}".format(
         debian_dir=DEBIAN_REPO_DIR,
-        deb_path=deb_path
-    ))
+        deb_path=debian_package_path
+    ), cwd=DEBIAN_REPO_DIR)
 
 
