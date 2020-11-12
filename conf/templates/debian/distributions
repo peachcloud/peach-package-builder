@@ -1,8 +1,0 @@
-Origin: PeachCloud
-Label: PeachCloud
-Codename: buster
-Architectures: amd64
-Components: main
-Description: Apt repository for PeachCloud debian packages
-SignWith: {{gpg_key_id}}
-DebOverride: override.buster

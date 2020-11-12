@@ -98,11 +98,8 @@ for service in SERVICES:
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
     print("[ BUILIDING SERVICE {} ]".format(service_name))
     subprocess.call(["git", "pull"], cwd=service_path)
-    debian_package_path = str(subprocess.check_output(["/root/.cargo/bin/cargo", "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path))
+    debian_package_path = subprocess.check_output(["/root/.cargo/bin/cargo", "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path).decode("utf-8").strip()
     print('OUTPUT: {}'.format(debian_package_path))
-    subprocess.call("reprepro includedeb buster {deb_path}".format(
-        debian_dir=DEBIAN_REPO_DIR,
-        deb_path=debian_package_path
-    ), cwd=DEBIAN_REPO_DIR)
+    subprocess.call(["reprepro", "includedeb", "buster", debian_package_path], cwd=DEBIAN_REPO_DIR)
 
 
