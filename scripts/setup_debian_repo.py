@@ -84,7 +84,7 @@ if INITIALIZE_DEBIAN_REPO:
     print("[ COPYING NGINX CONFIG ]")
     render_template(
         src="debian_repo/nginx_debian.conf",
-        dest="/etc/nginx/sites-enabled/deb.peachcloud.org",
+        dest="/etc/nginx/sites-enabled/apt.peachcloud.org",
         template_vars = {
             "apt_dir": APT_DIR
         }
