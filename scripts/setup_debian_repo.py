@@ -2,9 +2,10 @@ from utils import render_template
 
 import subprocess
 import os
+import argparse
 
-INITIALIZE_DEBIAN_REPO = True
 
+# constants
 MICROSERVICES_SRC_DIR = "/srv/peachcloud/automation/microservices"
 WEB_DIR = "/var/www/"
 APT_DIR = "/var/www/repos/apt"
@@ -17,10 +18,21 @@ GPG_KEY_ID = "4ACEF251EA3E091167E8F03EBF69A52BE3565476"
 
 SERVICES = [
     {"name": "peach-oled", "repo_url": "https://github.com/peachcloud/peach-oled.git"},
-    {"name": "peach-network", "repo_url": "https://github.com/peachcloud/peach-network.git"}
+    {"name": "peach-network", "repo_url": "https://github.com/peachcloud/peach-network.git"},
+    {"name": "peach-stats", "repo_url": "https://github.com/peachcloud/peach-stats.git"},
+    # {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"}, # currently build fails because it needs rust nightly for pear
+    {"name": "peach-menu", "repo_url": "https://github.com/peachcloud/peach-menu.git"},
+    {"name": "peach-buttons", "repo_url": "https://github.com/peachcloud/peach-buttons.git"}
 ]
 
-if INITIALIZE_DEBIAN_REPO:
+# parse CLI args
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--initialize", help="initialize and update debian repo", action="store_true")
+args = parser.parse_args()
+
+# initializing debian repo from a blank slate
+# (but this code is idempotent so it can be re-run if already initialized)
+if args.initialize:
 
     print("[ INSTALLING SYSTEM REQUIREMENTS ]")
     subprocess.call(["apt-get", "install", "git", "nginx", "curl", "build-essential", "reprepro", "gcc-aarch64-linux-gnu", ])
@@ -91,15 +103,21 @@ if INITIALIZE_DEBIAN_REPO:
     )
 
 
-# below is code for updating the microservices, building the microservices,
-# and adding them to the debian repo
+# below is code for git updating the microservices, building the microservices,
+# and (re)-adding them to the debian repo
+print("[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]")
 for service in SERVICES:
     service_name = service["name"]
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
     print("[ BUILIDING SERVICE {} ]".format(service_name))
     subprocess.call(["git", "pull"], cwd=service_path)
     debian_package_path = subprocess.check_output(["/root/.cargo/bin/cargo", "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path).decode("utf-8").strip()
-    print('OUTPUT: {}'.format(debian_package_path))
+    # remove debian package from repo
+    # (in the future we could look at some way of updating with versions instead of removing and adding)
+    subprocess.call(["reprepro", "remove", "buster", service_name], cwd=DEBIAN_REPO_DIR)
+    # add the package
     subprocess.call(["reprepro", "includedeb", "buster", debian_package_path], cwd=DEBIAN_REPO_DIR)
 
+
+print("[ DEBIAN REPO SETUP COMPLETE ]")
 
