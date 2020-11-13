@@ -8,9 +8,9 @@ import argparse
 # constants
 MICROSERVICES_SRC_DIR = "/srv/peachcloud/automation/microservices"
 WEB_DIR = "/var/www/"
-APT_DIR = "/var/www/repos/apt"
-DEBIAN_REPO_DIR = "/var/www/repos/apt/debian"
-DEBIAN_REPO_CONF_DIR = "/var/www/repos/apt/debian/conf"
+APT_DIR = "/var/www/apt.peachcloud.org"
+DEBIAN_REPO_DIR = "/var/www/apt.peachcloud.org/debian"
+DEBIAN_REPO_CONF_DIR = "/var/www/apt.peachcloud.org/debian/conf"
 
 # before running this script run `gpg --gen-key` on the server, and put the key id here
 # `gpg --list-keys`
