@@ -1,0 +1,5 @@
+deploy.sh
+secret*
+secret_files*
+ssh.sh
+notes.txt

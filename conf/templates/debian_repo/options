@@ -1,0 +1,3 @@
+verbose
+basedir {{debian_rep_dir}}
+ask-passphrase
