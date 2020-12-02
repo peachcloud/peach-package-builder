@@ -12,8 +12,8 @@ Currently:
 An idempotent script for initializing the Debian repo on the VPS
 
 ```
-apt update
-apt install git python python3-pip rsync
+sudo apt update
+sudo apt install git python python3-pip rsync
 git clone https://github.com/peachcloud/peach-vps.git
 cd peach-vps
 pip3 install -r requirements.txt
