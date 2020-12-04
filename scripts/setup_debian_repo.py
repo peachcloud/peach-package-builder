@@ -115,7 +115,7 @@ for service in SERVICES:
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
     print("[ BUILIDING SERVICE {} ]".format(service_name))
     subprocess.call(["git", "pull"], cwd=service_path)
-    debian_package_path = subprocess.check_output([cargo_path, "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path).decode("utf-8").strip()
+    debian_package_path = subprocess.run([cargo_path, "deb", "--target", "aarch64-unknown-linux-gnu"], cwd=service_path, stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
     # copy package to staging folder
     subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
 
