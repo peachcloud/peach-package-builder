@@ -76,16 +76,17 @@ if args.initialize:
         subprocess.call(["git", "clone", "https://github.com/freight-team/freight.git", freight_path])
 
     print("[ CONFIGURING FREIGHT ]")
+    freight_conf_tmp_path = os.path.join(USER_PATH, "freight.conf")
     render_template(
         src="debian_repo/freight.conf",
-        dest="/tmp",
+        dest=freight_conf_tmp_path,
         template_vars={
             "freight_lib_path": FREIGHT_LIB,
             "freight_cache_path": FREIGHT_CACHE,
             "gpg_key_email": GPG_KEY_EMAIL
         }
     )
-    subprocess.call(["sudo", "cp", "/tmp/freight.conf", FREIGHT_CONF])
+    subprocess.call(["sudo", "cp", freight_conf_tmp_path, FREIGHT_CONF])
 
     print("[ PULLING MICROSERVICES CODE FROM GITHUB ]")
     for service in SERVICES:
@@ -101,6 +102,8 @@ if args.initialize:
         subprocess.call(["gpg", "--armor", "--output", output_path, "--export", GPG_KEY_EMAIL])
 
     print("[ COPYING NGINX CONFIG ]")
+    nginx_conf_tmp_path = os.path.join(USER_PATH, "apt.peachcloud.org")
+    render_template(
     render_template(
         src="debian_repo/nginx_debian.conf",
         dest="/etc/nginx/sites-enabled/apt.peachcloud.org",
@@ -108,6 +111,7 @@ if args.initialize:
             "apt_dir": FREIGHT_CACHE
         }
     )
+    subprocess.call(["sudo", "cp", nginx_conf_tmp_path, "/etc/nginx/sites-enabled/apt.peachcloud.org"])
 
 # update the microservices from git and build the debian packages
 print("[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]")
