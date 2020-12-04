@@ -104,7 +104,6 @@ if args.initialize:
     print("[ COPYING NGINX CONFIG ]")
     nginx_conf_tmp_path = os.path.join(USER_PATH, "apt.peachcloud.org")
     render_template(
-    render_template(
         src="debian_repo/nginx_debian.conf",
         dest="/etc/nginx/sites-enabled/apt.peachcloud.org",
         template_vars = {
