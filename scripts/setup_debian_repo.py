@@ -105,7 +105,7 @@ if args.initialize:
     nginx_conf_tmp_path = os.path.join(USER_PATH, "apt.peachcloud.org")
     render_template(
         src="debian_repo/nginx_debian.conf",
-        dest="/etc/nginx/sites-enabled/apt.peachcloud.org",
+        dest=nginx_conf_tmp_path,
         template_vars = {
             "apt_dir": FREIGHT_CACHE
         }
