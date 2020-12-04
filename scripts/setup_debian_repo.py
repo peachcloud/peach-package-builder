@@ -45,7 +45,7 @@ cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
 if args.initialize:
 
     print("[ INSTALLING SYSTEM REQUIREMENTS ]")
-    subprocess.call(["apt-get", "install", "git", "nginx", "curl", "build-essential", "gcc-aarch64-linux-gnu", ])
+    subprocess.call(["sudo", "apt-get", "install", "git", "nginx", "curl", "build-essential", "gcc-aarch64-linux-gnu", ])
 
     print("[ CREATING DIRECTORIES ]")
     folders = [MICROSERVICES_SRC_DIR, FREIGHT_CACHE, FREIGHT_LIB]
