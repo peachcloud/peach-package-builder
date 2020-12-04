@@ -78,13 +78,14 @@ if args.initialize:
     print("[ CONFIGURING FREIGHT ]")
     render_template(
         src="debian_repo/freight.conf",
-        dest=FREIGHT_CONF,
+        dest="/tmp",
         template_vars={
             "freight_lib_path": FREIGHT_LIB,
             "freight_cache_path": FREIGHT_CACHE,
             "gpg_key_email": GPG_KEY_EMAIL
         }
     )
+    subprocess.call(["sudo", "cp", "/tmp/freight.conf", FREIGHT_CONF])
 
     print("[ PULLING MICROSERVICES CODE FROM GITHUB ]")
     for service in SERVICES:
