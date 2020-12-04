@@ -38,6 +38,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--initialize", help="initialize and update debian repo", action="store_true")
 args = parser.parse_args()
 
+cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
+
 # initializing debian repo from a blank slate
 # (but this code is idempotent so it can be re-run if already initialized)
 if args.initialize:
@@ -59,7 +61,6 @@ if args.initialize:
         first_command.wait()
 
     print("[ INSTALLING CARGO-DEB ]")
-    cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
     cargo_deb_path = os.path.join(USER_PATH, ".cargo/bin/cargo-deb")
     if not os.path.exists(cargo_deb_path):
         subprocess.call([cargo_path, "install", "cargo-deb"])
