@@ -124,10 +124,12 @@ for service in SERVICES:
     subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
 
 print("[ ADDING PACKAGES TO FREIGHT LIBRARY ]")
-for package in MICROSERVICES_DEB_DIR:
-    package_path = os.path.join(MICROSERVICES_DEB_DIR, package)
-    print("[ ADDING PACKAGE {} ]".format(package))
-    subprocess.call(["freight", "add", "-c", FREIGHT_CONF, package_path, "apt/buster"])
+# loop through all files in the microservices deb directory
+for filename in os.scandir(MICROSERVICES_DEB_DIR):
+    # avoid any files which are not debian packages
+    if filename.endswith(".deb"):
+        print("[ ADDING PACKAGE {} ]".format(filename.name))
+        subprocess.call(["freight", "add", "-c", FREIGHT_CONF, filename.path, "apt/buster"])
 
 print("[ ADDING PACKAGES TO FREIGHT CACHE ]")
 # needs to be run as sudo user
