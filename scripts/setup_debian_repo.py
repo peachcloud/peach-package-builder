@@ -78,7 +78,7 @@ if args.initialize:
     print("[ CONFIGURING FREIGHT ]")
     freight_conf_tmp_path = os.path.join(USER_PATH, "freight.conf")
     render_template(
-        src="debian_repo/freight.conf",
+        src="freight.conf",
         dest=freight_conf_tmp_path,
         template_vars={
             "freight_lib_path": FREIGHT_LIB,
@@ -104,7 +104,7 @@ if args.initialize:
     print("[ COPYING NGINX CONFIG ]")
     nginx_conf_tmp_path = os.path.join(USER_PATH, "apt.peachcloud.org")
     render_template(
-        src="debian_repo/nginx_debian.conf",
+        src="nginx_debian.conf",
         dest=nginx_conf_tmp_path,
         template_vars = {
             "apt_dir": FREIGHT_CACHE
