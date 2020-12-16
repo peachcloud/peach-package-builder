@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from utils import render_template
 
 import subprocess
