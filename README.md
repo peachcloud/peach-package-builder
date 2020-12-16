@@ -6,7 +6,7 @@ Scripts for configuring the PeachCloud VPS for various hosting and automation fu
 
 Currently:
 
- - Debian repository of microservices
+ - Debian repository of microservices (using [Freight](https://github.com/freight-team/freight))
 
 ## Setup Debian Repo
 
