@@ -25,5 +25,3 @@ def render_template(src, dest, template_vars=None):
         os.remove(dest)
     with open(dest, 'w') as f:
         f.write(output_text)
-
-
