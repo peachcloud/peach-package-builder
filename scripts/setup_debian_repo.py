@@ -125,7 +125,7 @@ for service in SERVICES:
 
 print("[ ADDING PACKAGES TO FREIGHT LIBRARY ]")
 for package in MICROSERVICES_DEB_DIR:
-    subprocess.call(["freight", "add", package, "apt/buster"])
+    subprocess.call(["freight", "add", "-c", FREIGHT_CONF, package, "apt/buster"])
 
 print("[ ADDING PACKAGES TO FREIGHT CACHE ]")
 # needs to be run as sudo user
