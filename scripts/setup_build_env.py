@@ -6,14 +6,9 @@ import subprocess
 import os
 import argparse
 
-
 # before running this script run `gpg --gen-key` on the server
 # assign the email address of the key id here:
 GPG_KEY_EMAIL = "andrew@mycelial.technology"
-# save the key passphrase to file and assign the path here:
-# (ensure the file is only readable by the user running freight)
-GPG_KEY_PASS_FILE = "/home/rust/passphrase.txt"
-# if you need to list the existing keys: `gpg --list-keys`
 
 
 # constants
@@ -22,7 +17,6 @@ FREIGHT_CONF = "/etc/freight.conf"
 FREIGHT_LIB = "/var/lib/freight"
 FREIGHT_CACHE = "/var/www/apt.peachcloud.org"
 MICROSERVICES_SRC_DIR = "/srv/peachcloud/automation/microservices"
-MICROSERVICES_DEB_DIR = "/srv/peachcloud/debs"
 USER_PATH = "/home/rust"
 
 
@@ -39,22 +33,32 @@ SERVICES = [
     # {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"}, # currently build fails because it needs rust nightly for pear
 ]
 
+cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
+
 # parse CLI args
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-i",
-    "--initialize",
-    help="initialize and update debian repo",
-    action="store_true")
+    "-u",
+    "--update",
+    help="Update Rust installation",
+    action="store_true"
+)
 args = parser.parse_args()
 
-cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
 
-# initializing debian repo from a blank slate
-# (but this code is idempotent so it can be re-run if already initialized)
-if args.initialize:
-
-    print("[ INSTALLING SYSTEM REQUIREMENTS ]")
+# update rust installation
+if args.update:
+    print("\n[ UPDATING RUST ]\n")
+    rustup_path = os.path.join(USER_PATH, ".cargo/bin/rustup")
+    if not os.path.exists(rustup_path):
+        print("rustup installation not found")
+        print("rerun this script without the '-u' flag to install rust")
+    else:
+        subprocess.call([rustup_path, "update"])
+else:
+    # initialize debian package build environment from a blank slate
+    # (but this code is idempotent so it can be re-run if already initialized)
+    print("\n[ INSTALLING SYSTEM REQUIREMENTS ]\n")
     subprocess.call(["sudo",
                      "apt-get",
                      "install",
@@ -65,13 +69,13 @@ if args.initialize:
                      "gcc-aarch64-linux-gnu",
                      ])
 
-    print("[ CREATING DIRECTORIES ]")
+    print("\n[ CREATING DIRECTORIES ]\n")
     folders = [MICROSERVICES_SRC_DIR, FREIGHT_CACHE, FREIGHT_LIB]
     for folder in folders:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-    print("[ INSTALLING RUST ]")
+    print("\n[ INSTALLING RUST ]\n")
     rustc_path = os.path.join(USER_PATH, ".cargo/bin/rustc")
     if not os.path.exists(rustc_path):
         first_command = subprocess.Popen(
@@ -80,25 +84,25 @@ if args.initialize:
             ["sh", "-s", "--", "-y"], stdin=first_command.stdout)
         first_command.wait()
 
-    print("[ INSTALLING CARGO-DEB ]")
+    print("\n[ INSTALLING CARGO-DEB ]\n")
     cargo_deb_path = os.path.join(USER_PATH, ".cargo/bin/cargo-deb")
     if not os.path.exists(cargo_deb_path):
         subprocess.call([cargo_path, "install", "cargo-deb"])
 
-    print("[ INSTALL TOOLCHAIN FOR CROSS-COMPILATION ]")
+    print("\n[ INSTALL TOOLCHAIN FOR CROSS-COMPILATION ]\n")
     rustup_path = os.path.join(USER_PATH, ".cargo/bin/rustup")
     subprocess.call([rustup_path, "target", "add",
                      "aarch64-unknown-linux-gnu"])
     subprocess.call([rustup_path, "toolchain", "install",
                      "nightly-aarch64-unknown-linux-gnu"])
 
-    print("[ INSTALLING FREIGHT ]")
+    print("\n[ INSTALLING FREIGHT ]\n")
     freight_path = os.path.join(AUTOMATION_DIR, "freight")
     if not os.path.exists(freight_path):
         subprocess.call(
             ["git", "clone", "https://github.com/freight-team/freight.git", freight_path])
 
-    print("[ CONFIGURING FREIGHT ]")
+    print("\n[ CONFIGURING FREIGHT ]\n")
     freight_conf_tmp_path = os.path.join(USER_PATH, "freight.conf")
     render_template(
         src="freight.conf",
@@ -111,7 +115,7 @@ if args.initialize:
     )
     subprocess.call(["sudo", "cp", freight_conf_tmp_path, FREIGHT_CONF])
 
-    print("[ PULLING MICROSERVICES CODE FROM GITHUB ]")
+    print("\n[ PULLING MICROSERVICES CODE FROM GITHUB ]\n")
     for service in SERVICES:
         name = service["name"]
         repo_url = service["repo_url"]
@@ -119,13 +123,13 @@ if args.initialize:
         if not os.path.exists(service_path):
             subprocess.call(["git", "clone", repo_url, service_path])
 
-    print("[ EXPORTING PUBLIC GPG KEY ]")
+    print("\n[ EXPORTING PUBLIC GPG KEY ]\n")
     output_path = "{}/peach_pub.gpg".format(FREIGHT_CACHE)
     if not os.path.exists(output_path):
         subprocess.call(["gpg", "--armor", "--output",
                          output_path, "--export", GPG_KEY_EMAIL])
 
-    print("[ COPYING NGINX CONFIG ]")
+    print("\n[ COPYING NGINX CONFIG ]\n")
     nginx_conf_tmp_path = os.path.join(USER_PATH, "apt.peachcloud.org")
     render_template(
         src="nginx_debian.conf",
@@ -137,33 +141,4 @@ if args.initialize:
     subprocess.call(["sudo", "cp", nginx_conf_tmp_path,
                      "/etc/nginx/sites-enabled/apt.peachcloud.org"])
 
-# update the microservices from git and build the debian packages
-print("[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]")
-for service in SERVICES:
-    service_name = service["name"]
-    service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
-    print("[ BUILIDING SERVICE {} ]".format(service_name))
-    subprocess.call(["git", "pull"], cwd=service_path)
-    debian_package_path = subprocess.run(
-        [
-            cargo_path,
-            "deb",
-            "--target",
-            "aarch64-unknown-linux-gnu"],
-        cwd=service_path,
-        stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
-    subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
-
-print("[ ADDING PACKAGES TO FREIGHT LIBRARY ]")
-for package in os.scandir(MICROSERVICES_DEB_DIR):
-    if package.name.endswith(".deb"):
-        print("[ ADDING PACKAGE {} ]".format(package.name))
-        subprocess.call(["freight", "add", "-c", FREIGHT_CONF,
-                         package.path, "apt/buster"])
-
-print("[ ADDING PACKAGES TO FREIGHT CACHE ]")
-# needs to be run as sudo user
-subprocess.call(["sudo", "freight", "cache", "-g",
-                 GPG_KEY_EMAIL, "-p", GPG_KEY_PASS_FILE])
-
-print("[ DEBIAN REPO SETUP COMPLETE ]")
+    print("\n[ DEBIAN PACKAGE BUILD ENVIRONMENT SETUP COMPLETE ]")
