@@ -55,12 +55,14 @@ python3 -u scripts/setup_debian_repo.py -i
 ## Update Debian Repo
 
 Without the -i flag, the `setup_debian_repo.py` script rebuilds all
-microservices (cross-compiled to arm64) and updates the Debian repo
+microservices (cross-compiled to arm64) and updates the Debian repo:
 
 ```
 cd peach-vps
 python3 -u scripts/setup_debian_repo.py
 ```
+
+Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
 ## Install from Debian Repo
 
