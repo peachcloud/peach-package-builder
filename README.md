@@ -1,18 +1,14 @@
 # peach-vps
 
-![Generic badge](https://img.shields.io/badge/version-0.2.1-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.3.0-<COLOR>.svg)
 
 Scripts for configuring the PeachCloud VPS for various hosting and automation functions.
 
-Currently:
+## Setup Build Environment
 
- - Debian repository of microservices (using [Freight](https://github.com/freight-team/freight))
+`scripts/setup_build_env.py`
 
-## Setup Debian Repo
-
-`scripts/setup_debian_repo.py`
-
-An idempotent script for initializing the Debian repo on the VPS.
+An idempotent script for initializing a build and deployment environment for PeachCloud packages.
 
 The script currently performs the following actions:
 
@@ -21,16 +17,15 @@ The script currently performs the following actions:
  - Installs Rust
  - Installs `cargo deb`
  - Installs Rust aarch64 toolchain for cross-compilation
- - Installs Freight for package archive creation and management
+ - Installs [Freight](https://github.com/freight-team/freight) for package archive creation and management
  - Configures Freight
  - Pulls microservices code from GitHub repos
  - Exports the public GPG key
  - Configures nginx
- - Builds and updates microservice packages
- - Adds packages to Freight library
- - Adds packages to Freight cache
 
-Prior to executing the script for the first time, run the following commands on the target system:
+The script can also be run with the optional `-u` flag (`--update`) to update the Rust compiler and installed toolchains.
+
+**NB:** Prior to executing the script for the first time, run the following commands on the target system:
 
 ```
 sudo apt update
@@ -40,33 +35,39 @@ cd peach-vps
 pip3 install -r requirements.txt
 ```
 
-Open `scripts/setup_debian_repo.py` and set the following constants:
+Open `scripts/setup_build_env.py` and set the following constants:
 
  - USER_PATH
  - GPG_KEY_EMAIL
  - GPG_KEY_PASS_FILE
 
-Then execute the script with the `-i` flag to run the full system initialization process (_note: several commands executed by the script require `sudo` permissions. You will be prompted for the user password during the execution of the scipt._):
+Then execute the script to run the full system initialization process (_note: several commands executed by the script require `sudo` permissions. You will be prompted for the user password during the execution of the scipt._):
 
 ```
-python3 -u scripts/setup_debian_repo.py -i
+python3 -u scripts/setup_build_env.py
 ```
 
-## Update Debian Repo
+## Build and Serve Debian Packages
 
-Without the -i flag, the `setup_debian_repo.py` script rebuilds all
-microservices (cross-compiled to arm64) and updates the Debian repo:
+`scripts/build_packages.py`
+
+An idempotent script for building the latest versions of all PeachCloud packages and adding them to the Debian package archive.
+
+The script currently performs the following actions:
+
+ - Builds and updates microservice packages
+ - Adds packages to Freight library
+ - Adds packages to Freight cache
 
 ```
-cd peach-vps
-python3 -u scripts/setup_debian_repo.py
+python3 -u scripts/build_packages.py
 ```
 
 Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
-## Install from Debian Repo
+## Install Packages from Debian Package Archive
 
-To add the PeachCloud Debian repo as an apt source, run the following commands from your Pi:
+To add the PeachCloud Debian package archive as an apt source, run the following commands from your Pi:
 
 ```
 vi /etc/apt/sources.list.d/peach.list
