@@ -31,11 +31,11 @@ SERVICES = [
 
 cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
 
-print("\n[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]\n")
+print("[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]")
 for service in SERVICES:
     service_name = service["name"]
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
-    print("\n[ BUILIDING SERVICE {} ]\n".format(service_name))
+    print("[ BUILIDING SERVICE {} ]".format(service_name))
     subprocess.call(["git", "pull"], cwd=service_path)
     debian_package_path = subprocess.run(
         [
@@ -47,16 +47,16 @@ for service in SERVICES:
         stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
     subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
 
-print("\n[ ADDING PACKAGES TO FREIGHT LIBRARY ]\n")
+print("[ ADDING PACKAGES TO FREIGHT LIBRARY ]")
 for package in os.scandir(MICROSERVICES_DEB_DIR):
     if package.name.endswith(".deb"):
-        print("\n[ ADDING PACKAGE {} ]\n".format(package.name))
+        print("[ ADDING PACKAGE {} ]".format(package.name))
         subprocess.call(["freight", "add", "-c", FREIGHT_CONF,
                          package.path, "apt/buster"])
 
-print("\n[ ADDING PACKAGES TO FREIGHT CACHE ]\n")
+print("[ ADDING PACKAGES TO FREIGHT CACHE ]")
 # needs to be run as sudo user
 subprocess.call(["sudo", "freight", "cache", "-g",
                  GPG_KEY_EMAIL, "-p", GPG_KEY_PASS_FILE])
 
-print("\n[ MICROSERVICE PACKAGE ARCHIVE UPDATED ]")
+print("[ MICROSERVICE PACKAGE ARCHIVE UPDATED ]")
