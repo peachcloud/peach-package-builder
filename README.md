@@ -76,13 +76,13 @@ vi /etc/apt/sources.list.d/peach.list
 Append the following line:
 
 ```
-deb http://apt.peachcloud.org/debian/ buster main
+deb http://apt.peachcloud.org/ buster main
 ```
 
 Add the gpg pub key to the apt-key list:
 
 ```
-wget -O - http://apt.peachcloud.org/peach_pub.gpg | sudo apt-key add -
+wget -O - http://apt.peachcloud.org/pubkey.gpg | sudo apt-key add -
 ```
 
 You can then install peach packages with apt:
