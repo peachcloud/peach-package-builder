@@ -124,7 +124,7 @@ else:
             subprocess.call(["git", "clone", repo_url, service_path])
 
     print("[ EXPORTING PUBLIC GPG KEY ]")
-    output_path = "{}/peach_pub.gpg".format(FREIGHT_CACHE)
+    output_path = "{}/pubkey.gpg".format(FREIGHT_CACHE)
     if not os.path.exists(output_path):
         subprocess.call(["gpg", "--armor", "--output",
                          output_path, "--export", GPG_KEY_EMAIL])
