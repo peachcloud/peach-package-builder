@@ -1,39 +1,12 @@
 #!/usr/bin/env python3
 
 from utils import render_template
+from constants import *
 
 import subprocess
-import os
 import argparse
+import os
 
-# before running this script run `gpg --gen-key` on the server
-# assign the email address of the key id here:
-GPG_KEY_EMAIL = "andrew@mycelial.technology"
-
-
-# constants
-AUTOMATION_DIR = "/srv/peachcloud/automation"
-FREIGHT_CONF = "/etc/freight.conf"
-FREIGHT_LIB = "/var/lib/freight"
-FREIGHT_CACHE = "/var/www/apt.peachcloud.org"
-MICROSERVICES_SRC_DIR = "/srv/peachcloud/automation/microservices"
-USER_PATH = "/home/rust"
-
-
-SERVICES = [
-    {"name": "peach-buttons",
-     "repo_url": "https://github.com/peachcloud/peach-buttons.git"},
-    {"name": "peach-menu", "repo_url": "https://github.com/peachcloud/peach-menu.git"},
-    {"name": "peach-monitor",
-     "repo_url": "https://github.com/peachcloud/peach-monitor.git"},
-    {"name": "peach-network",
-     "repo_url": "https://github.com/peachcloud/peach-network.git"},
-    {"name": "peach-oled", "repo_url": "https://github.com/peachcloud/peach-oled.git"},
-    {"name": "peach-stats", "repo_url": "https://github.com/peachcloud/peach-stats.git"},
-    # {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"}, # currently build fails because it needs rust nightly for pear
-]
-
-cargo_path = os.path.join(USER_PATH, ".cargo/bin/cargo")
 
 # parse CLI args
 parser = argparse.ArgumentParser()
@@ -87,7 +60,7 @@ else:
     print("[ INSTALLING CARGO-DEB ]")
     cargo_deb_path = os.path.join(USER_PATH, ".cargo/bin/cargo-deb")
     if not os.path.exists(cargo_deb_path):
-        subprocess.call([cargo_path, "install", "cargo-deb"])
+        subprocess.call([CARGO_PATH, "install", "cargo-deb"])
 
     print("[ INSTALL TOOLCHAIN FOR CROSS-COMPILATION ]")
     rustup_path = os.path.join(USER_PATH, ".cargo/bin/rustup")
