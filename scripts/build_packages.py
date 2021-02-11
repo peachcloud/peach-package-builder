@@ -2,7 +2,19 @@
 from constants import *
 
 import subprocess
+import argparse
+import sys
 import os
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-d",
+    "--default",
+    help="Ensure default branch for all repos for build",
+    action="store_true"
+)
+args = parser.parse_args()
 
 
 print("[ BUILDING AND UPDATING MICROSERVICE PACKAGES ]")
@@ -10,7 +22,17 @@ for service in SERVICES:
     service_name = service["name"]
     service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
     print("[ BUILIDING SERVICE {} ]".format(service_name))
-    subprocess.call(["git", "pull"], cwd=service_path)
+    # this arg ensures we build the default branch, otherwise we build what ever is found locally
+    if args.default:
+        # because some repo have main as default and some as master, we get the default
+        default_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD'],
+                                                 cwd=service_path).decode(sys.stdout.encoding)
+        print("default: {}".format(default_branch))
+        branch = default_branch.replace('origin/', '').strip()
+        print("branch: {}".format(branch))
+        subprocess.run(["git", "checkout", branch], cwd=service_path)
+        subprocess.run(["git", "reset", "HEAD", "--hard"], cwd=service_path)
+        subprocess.run(["git", "pull"], cwd=service_path)
     debian_package_path = subprocess.run(
         [
             CARGO_PATH,
