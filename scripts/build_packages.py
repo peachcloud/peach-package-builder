@@ -3,7 +3,6 @@ from constants import *
 
 import subprocess
 import argparse
-import sys
 import os
 
 
@@ -27,9 +26,7 @@ for service in SERVICES:
         # because some repo have main as default and some as master, we get the default
         default_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD'],
                                                  cwd=service_path).decode(sys.stdout.encoding)
-        print("default: {}".format(default_branch))
         branch = default_branch.replace('origin/', '').strip()
-        print("branch: {}".format(branch))
         subprocess.run(["git", "checkout", branch], cwd=service_path)
         subprocess.run(["git", "reset", "HEAD", "--hard"], cwd=service_path)
         subprocess.run(["git", "pull"], cwd=service_path)
