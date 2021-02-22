@@ -1,6 +1,6 @@
 # peach-vps
 
-![Generic badge](https://img.shields.io/badge/version-0.3.0-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.3.1-<COLOR>.svg)
 
 Scripts for configuring the PeachCloud VPS for various hosting and automation functions.
 
