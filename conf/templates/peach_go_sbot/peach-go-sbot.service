@@ -1,0 +1,11 @@
+[Unit]
+Description=peachs go-sbot
+
+[Service]
+Type=simple
+User=peach-go-sbot
+ExecStart=/usr/bin/go-sbot
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

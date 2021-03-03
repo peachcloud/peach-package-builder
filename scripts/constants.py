@@ -1,6 +1,9 @@
 # constants used by build and setup scripts
 import os
 
+# path to project directory
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
 # before running this script run `gpg --gen-key` on the server
 # assign the email address of the key id here:
 GPG_KEY_EMAIL = "andrew@mycelial.technology"
