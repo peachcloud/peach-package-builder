@@ -1,0 +1,5 @@
+Package: peach-go-sbot
+Version: {{version}}
+Architecture: all
+Maintainer: Andrew Reid <gnomad@cryptolab.net>
+Description: debian package for go-ssb-server on arm64

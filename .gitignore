@@ -3,3 +3,4 @@ secret*
 secret_files*
 ssh.sh
 notes.txt
+*__pycache__*

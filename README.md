@@ -65,6 +65,13 @@ python3 -u scripts/build_packages.py
 
 Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
+## Build peach-go-sbot Debian package
+
+`sudo python3 scripts/build_peach_go_sbot.py -v <version_number>`
+
+This builds the peach-go-sbot package using the latest code from go-ssb, along with a systemd unit file,
+and adds the Debian package to the Freight library.
+
 ## Install Packages from Debian Package Archive
 
 To add the PeachCloud Debian package archive as an apt source, run the following commands from your Pi:
