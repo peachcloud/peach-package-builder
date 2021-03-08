@@ -6,6 +6,7 @@ adduser --quiet --system peach-go-sbot
 
 # set permissions
 chown peach-go-sbot /usr/bin/go-sbot
+chown peach-go-sbot /usr/bin/sbotcli
 
 # Automatically added by cargo-deb
 if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
