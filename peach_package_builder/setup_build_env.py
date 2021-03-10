@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from utils import render_template
-from constants import *
+from peach_package_builder.utils import render_template
+from peach_package_builder.constants import *
 
 import subprocess
 import argparse

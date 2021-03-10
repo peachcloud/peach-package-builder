@@ -2,8 +2,8 @@ import os
 import jinja2
 import subprocess
 
-PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-print('PROJECT_PATH: {}'.format(PROJECT_PATH))
+from peach_package_builder.constants import *
+
 
 template_path = os.path.join(PROJECT_PATH, 'conf/templates')
 template_loader = jinja2.FileSystemLoader(searchpath=template_path)
@@ -25,3 +25,15 @@ def render_template(src, dest, template_vars=None):
         os.remove(dest)
     with open(dest, 'w') as f:
         f.write(output_text)
+
+
+def add_deb_to_freight(package_name, package_path):
+    print("[ ADDING PACKAGE {} ]".format(package_name))
+    subprocess.check_call(["freight", "add", "-c", FREIGHT_CONF, package_path, "apt/buster"])
+
+
+def update_freight_cache():
+    print("[ ADDING PACKAGES TO FREIGHT CACHE ]")
+    # needs to be run as sudo user
+    subprocess.call(["sudo", "freight", "cache", "-g",
+                     GPG_KEY_EMAIL, "-p", GPG_KEY_PASS_FILE])

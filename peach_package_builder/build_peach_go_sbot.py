@@ -4,16 +4,15 @@ script to create debian packages for cross-compiled go binaries for go-sbot
 based off of this post
 https://unix.stackexchange.com/questions/627689/how-to-create-a-debian-package-from-a-bash-script-and-a-systemd-service
 """
-
-
-from constants import *
-from utils import render_template
-
 import subprocess
 import argparse
 import sys
 import os
 import shutil
+
+from peach_package_builder.constants import *
+from peach_package_builder.utils import render_template, add_deb_to_freight, update_freight_cache
+
 
 DEB_CONF_DIR = os.path.join(PROJECT_PATH, 'conf/templates/peach_go_sbot')
 DEB_BUILD_DIR = "/tmp/peach_go_sbot"
@@ -27,6 +26,7 @@ def crosscompile_peach_go_sbot():
     subprocess.check_call(["env", "GOOS=linux", "GOARCH=arm64", "go", "build", "./cmd/sbotcli"], cwd=GO_SSB_DIR)
     print("[CROSS-COMPILING go-sbot]")
     subprocess.check_call(["env", "GOOS=linux", "GOARCH=arm64", "go", "build", "./cmd/go-sbot"], cwd=GO_SSB_DIR)
+
 
 def package_peach_go_sbot(version):
 
@@ -71,13 +71,15 @@ def package_peach_go_sbot(version):
     print("[ CREATING {}]".format(deb_file_name))
     subprocess.check_call(["dpkg-deb", "-b", ".", deb_file_name], cwd=DEB_BUILD_DIR)
 
-    # add deb package to freight
-    print("[ ADDING PACKAGE TO FREIGHT ]")
+    # copy deb package to MICROSERVICES_DEB_DIR
     deb_path = os.path.join(DEB_BUILD_DIR, deb_file_name)
-    subprocess.check_call(["freight", "add", "-c", FREIGHT_CONF, deb_path, "apt/buster"])
-    print("[ ADDING PACKAGE TO FREIGHT CACHE ]")
-    subprocess.call(["sudo", "freight", "cache", "-g",
-                     GPG_KEY_EMAIL, "-p", GPG_KEY_PASS_FILE])
+    subprocess.check_call(["cp", deb_path, MICROSERVICES_DEB_DIR])
+
+    # add deb package to freight
+    add_deb_to_freight(package_name=deb_file_name, package_path=deb_path)
+
+    # update freight cache
+    update_freight_cache()
 
 
 def build_peach_go_sbot():
