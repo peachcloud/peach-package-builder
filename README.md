@@ -47,9 +47,9 @@ Then execute the script to run the full system initialization process (_note: se
 python3 -u peach_package_builder/setup_build_env.py
 ```
 
-## Build Packages
+## Build packages
 
-`peach_package_builder/build_packages.py`
+`peach_package_builder/build_rust_packages.py`
 
 An idempotent script for building the latest versions of all PeachCloud packages and adding them to the Debian package archive.
 
@@ -69,8 +69,14 @@ Without the -d flag, whatever version of the code is locally stored will be used
 
 Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
+You can also just build the rust packages by running:
+```python3 -d peach_package_builder/build_rust_packages.py```
 
-## Build peach-go-sbot Debian package
+Or just build peach-config by running:
+```python3 -d peach_package_builder/build_peach_config.py```
+
+
+## Build peach-go-sbot package
 
 First, open peach_package_builder/build_peach_go_sbot.py and manually edit PEACH_GO_SBOT_VERSION. 
 
@@ -81,6 +87,9 @@ Then run,
 
 This builds the peach-go-sbot package using the latest code from go-ssb, along with a systemd unit file,
 and adds the Debian package to the Freight library.
+
+peach-go-sbot is currently not included in build_packages as it requires manually updating. 
+
 
 ## Install Packages from Debian Package Archive
 
