@@ -49,7 +49,7 @@ python3 -u peach_package_builder/setup_build_env.py
 
 ## Build packages
 
-`peach_package_builder/build_rust_packages.py`
+`peach_package_builder/build_packages.py`
 
 An idempotent script for building the latest versions of all PeachCloud packages and adding them to the Debian package archive.
 
@@ -87,8 +87,6 @@ Then run,
 
 This builds the peach-go-sbot package using the latest code from go-ssb, along with a systemd unit file,
 and adds the Debian package to the Freight library.
-
-peach-go-sbot is currently not included in build_packages as it requires manually updating. 
 
 
 ## Install Packages from Debian Package Archive
