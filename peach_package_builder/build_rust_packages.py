@@ -35,29 +35,28 @@ def build_rust_packages(default_branch=False):
             default_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD'],
                                                      cwd=service_path).decode(sys.stdout.encoding)
             branch = default_branch.replace('origin/', '').strip()
-            subprocess.run(["git", "checkout", branch], cwd=service_path)
-            subprocess.run(["git", "reset", "HEAD", "--hard"], cwd=service_path)
-            subprocess.run(["git", "pull"], cwd=service_path)
-        debian_package_path = subprocess.run(
+            subprocess.check_call(["git", "checkout", branch], cwd=service_path)
+            subprocess.check_call(["git", "reset", "HEAD", "--hard"], cwd=service_path)
+            subprocess.check_call(["git", "pull"], cwd=service_path)
+        debian_package_path = subprocess.check_output(
             [
                 CARGO_PATH,
                 "deb",
                 "--target",
                 "aarch64-unknown-linux-gnu"],
-            cwd=service_path,
-            stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
+            cwd=service_path).decode("utf-8").strip()
         subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
 
-        # this function adds all .deb files in MICROSERVICES_DEB_DIR to freight
-        add_debs_dir_to_freight()
+    # this function adds all .deb files in MICROSERVICES_DEB_DIR to freight
+    add_debs_dir_to_freight()
 
 
-def build_packages(default=False):
+def build_packages(default_branch=False):
     """
     builds all PeachCloud microservices as .deb files and adds them to the freight repo
     """
-    build_rust_packages(default_branch=default)
-    build_peach_config(default_branch=default)
+    build_rust_packages(default_branch=default_branch)
+    build_peach_config(default_branch=default_branch)
     print("[ MICROSERVICE PACKAGE ARCHIVE UPDATED ]")
 
 
@@ -70,4 +69,4 @@ if __name__ == '__main__':
         action="store_true"
     )
     args = parser.parse_args()
-    build_packages(default=args.default)
+    build_packages(default_branch=args.default)

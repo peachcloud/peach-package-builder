@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 """
 script to build the peach-config debian module and add it to the freight repository
 """
-
 import argparse
 import subprocess
 import sys
@@ -22,6 +20,12 @@ def build_peach_config(default_branch=True):
         subprocess.check_call(["git", "checkout", branch], cwd=service_path)
         subprocess.check_call(["git", "reset", "HEAD", "--hard"], cwd=service_path)
         subprocess.check_call(["git", "pull"], cwd=service_path)
+    # remove old build dir
+    subprocess.check_call([
+            "rm",
+            "-rf",
+            os.path.join(service_path, 'deb_dist')
+    ])
     # build .deb
     subprocess.check_call([
             "python3",

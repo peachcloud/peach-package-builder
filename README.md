@@ -1,12 +1,12 @@
-# peach-vps
+# peach-package-builder
 
-![Generic badge](https://img.shields.io/badge/version-0.3.1-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.3.2-<COLOR>.svg)
 
-Scripts for configuring the PeachCloud VPS for various hosting and automation functions.
+Scripts for building debian packages for PeachCloud microservices.
 
 ## Setup Build Environment
 
-`scripts/setup_build_env.py`
+`python3 peach_package_builder/setup_build_env.py`
 
 An idempotent script for initializing a build and deployment environment for PeachCloud packages.
 
@@ -35,7 +35,7 @@ cd peach-vps
 pip3 install -r requirements.txt
 ```
 
-Open `scripts/setup_build_env.py` and set the following constants:
+Open `peach_package_builder/setup_build_env.py` and set the following constants:
 
  - USER_PATH
  - GPG_KEY_EMAIL
@@ -44,30 +44,40 @@ Open `scripts/setup_build_env.py` and set the following constants:
 Then execute the script to run the full system initialization process (_note: several commands executed by the script require `sudo` permissions. You will be prompted for the user password during the execution of the scipt._):
 
 ```
-python3 -u scripts/setup_build_env.py
+python3 -u peach_package_builder/setup_build_env.py
 ```
 
-## Build and Serve Debian Packages
+## Build Packages
 
-`scripts/build_packages.py`
+`peach_package_builder/build_packages.py`
 
 An idempotent script for building the latest versions of all PeachCloud packages and adding them to the Debian package archive.
 
 The script currently performs the following actions:
 
- - Builds and updates microservice packages
+ - Builds and updates Rust microservice packages
+ - Builds and updates peach-config python package 
  - Adds packages to Freight library
  - Adds packages to Freight cache
 
 ```
-python3 -u scripts/build_packages.py
+python3 -d peach_package_builder/build_packages.py
 ```
+
+The -d flag ensures that all packages are built from the latest version of the default branch currently on GitHub. 
+Without the -d flag, whatever version of the code is locally stored will be used (which can be useful for testing). 
 
 Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
+
 ## Build peach-go-sbot Debian package
 
-`sudo python3 scripts/build_peach_go_sbot.py -v <version_number>`
+First, open peach_package_builder/build_peach_go_sbot.py and manually edit PEACH_GO_SBOT_VERSION. 
+
+We manually increment the version number when we want to build a new version of peach-go-sbot. 
+
+Then run,
+`python3 peach_package_builder/build_peach_go_sbot.py`
 
 This builds the peach-go-sbot package using the latest code from go-ssb, along with a systemd unit file,
 and adds the Debian package to the Freight library.
