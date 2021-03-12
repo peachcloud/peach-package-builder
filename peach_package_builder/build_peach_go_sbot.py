@@ -1,20 +1,22 @@
-#!/usr/bin/env python3
 """
 script to create debian packages for cross-compiled go binaries for go-sbot
 based off of this post
 https://unix.stackexchange.com/questions/627689/how-to-create-a-debian-package-from-a-bash-script-and-a-systemd-service
 """
-
-
-from constants import *
-from utils import render_template
-
 import subprocess
 import argparse
-import sys
-import os
+import re
 import shutil
+import sys
+from packaging import version as pversion
 
+from peach_package_builder.constants import *
+from peach_package_builder.utils import render_template, add_deb_to_freight, update_freight_cache
+
+# manually update this version when we want to build a new peach-go-sbot package
+PEACH_GO_SBOT_VERSION = '0.1.4'
+
+# constants
 DEB_CONF_DIR = os.path.join(PROJECT_PATH, 'conf/templates/peach_go_sbot')
 DEB_BUILD_DIR = "/tmp/peach_go_sbot"
 GO_SSB_DIR = "/srv/peachcloud/automation/go-ssb"
@@ -22,14 +24,13 @@ GO_SSB_DIR = "/srv/peachcloud/automation/go-ssb"
 
 def crosscompile_peach_go_sbot():
     subprocess.check_call(["git", "pull"], cwd=GO_SSB_DIR)
-    # TODO: confirm that version number in the repo matches the version number we set for the package we are building
     print("[CROSS-COMPILING sbotcli]")
     subprocess.check_call(["env", "GOOS=linux", "GOARCH=arm64", "go", "build", "./cmd/sbotcli"], cwd=GO_SSB_DIR)
     print("[CROSS-COMPILING go-sbot]")
     subprocess.check_call(["env", "GOOS=linux", "GOARCH=arm64", "go", "build", "./cmd/go-sbot"], cwd=GO_SSB_DIR)
 
-def package_peach_go_sbot(version):
 
+def package_peach_go_sbot(version):
     print("[ PACKAGING peach-go-sbot ]")
     # copy debian conf files into correct locations in package build directory
     DEBIAN_SRC_DIR = os.path.join(DEB_CONF_DIR, 'DEBIAN')
@@ -71,35 +72,31 @@ def package_peach_go_sbot(version):
     print("[ CREATING {}]".format(deb_file_name))
     subprocess.check_call(["dpkg-deb", "-b", ".", deb_file_name], cwd=DEB_BUILD_DIR)
 
-    # add deb package to freight
-    print("[ ADDING PACKAGE TO FREIGHT ]")
+    # copy deb package to MICROSERVICES_DEB_DIR
     deb_path = os.path.join(DEB_BUILD_DIR, deb_file_name)
-    subprocess.check_call(["freight", "add", "-c", FREIGHT_CONF, deb_path, "apt/buster"])
-    print("[ ADDING PACKAGE TO FREIGHT CACHE ]")
-    subprocess.call(["sudo", "freight", "cache", "-g",
-                     GPG_KEY_EMAIL, "-p", GPG_KEY_PASS_FILE])
+    subprocess.check_call(["cp", deb_path, MICROSERVICES_DEB_DIR])
+
+    # add deb package to freight
+    add_deb_to_freight(package_name=deb_file_name, package_path=deb_path)
+
+    # update freight cache
+    update_freight_cache()
 
 
 def build_peach_go_sbot():
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-v",
-        "--version",
-        help="Set version number for go-sbot",
-    )
-    args = parser.parse_args()
-
-    print("[ BUILDING PEACH-GO-SBOT VERSION {}]".format(args.version))
+    # gets the most recently built peach_go_sbot version, and increments the micro-number by 1
+    version = PEACH_GO_SBOT_VERSION
+    print("[ BUILDING PEACH-GO-SBOT VERSION {}]".format(version))
 
     # delete build directory if it already exists or create it
     subprocess.check_call(["rm", "-rf", DEB_BUILD_DIR])
     if not os.path.exists(DEB_BUILD_DIR):
         os.makedirs(DEB_BUILD_DIR)
 
+    # cross-compile and package peach-go-sbot with new version number
     crosscompile_peach_go_sbot()
-    package_peach_go_sbot(version=args.version)
-
+    package_peach_go_sbot(version=version)
 
 
 if __name__ == '__main__':
