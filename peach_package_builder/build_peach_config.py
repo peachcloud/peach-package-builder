@@ -15,7 +15,6 @@ def get_version_from_setup_file(file_path):
     with open(file_path, 'r') as f:
         lines = f.read().splitlines()
         for line in lines:
-            print(line)
             match = re.match('.*version = "(\S+)",', line)
             if match:
                 version = match.group(1)
