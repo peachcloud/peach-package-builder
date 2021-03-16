@@ -4,10 +4,24 @@ script to build the peach-config debian module and add it to the freight reposit
 import argparse
 import subprocess
 import sys
+import re
 import os
 
 from peach_package_builder.constants import *
 from peach_package_builder.utils import add_deb_to_freight, update_freight_cache
+
+
+def get_version_from_setup_file(file_path):
+    with open(file_path, 'r') as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            print(line)
+            match = re.match('.*version = "(\S+)",', line)
+            if match:
+                version = match.group(1)
+                return version
+    # if a version wasn't found then raise an exception
+    raise Exception("version not found")
 
 
 def build_peach_config(default_branch=True):
@@ -34,7 +48,10 @@ def build_peach_config(default_branch=True):
             "bdist_deb"
         ],
         cwd=service_path)
-    version = "0.2.7"   # TODO: get this version number from the repo
+    # get version number of peach-config from setup.py file
+    setup_file = os.path.join(service_path, 'setup.py')
+    version = get_version_from_setup_file(setup_file)
+    # build the deb
     deb_name = "python3-peach-config_{version}-1_all.deb".format(version=version)
     debian_package_path = os.path.join(
         service_path,
