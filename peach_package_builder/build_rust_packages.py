@@ -36,8 +36,8 @@ def build_rust_packages(default_branch=False):
                                                      cwd=service_path).decode(sys.stdout.encoding)
             branch = default_branch.replace('origin/', '').strip()
             subprocess.check_call(["git", "checkout", branch], cwd=service_path)
-            subprocess.check_call(["git", "reset", "HEAD", "--hard"], cwd=service_path)
-            subprocess.check_call(["git", "pull"], cwd=service_path)
+            subprocess.check_call(["git", "fetch", "--all"], cwd=service_path)
+            subprocess.check_call(["git", "reset", "--hard", default_branch], cwd=service_path)
         debian_package_path = subprocess.check_output(
             [
                 CARGO_PATH,
