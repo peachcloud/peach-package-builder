@@ -1,6 +1,6 @@
 # peach-package-builder
 
-![Generic badge](https://img.shields.io/badge/version-0.3.2-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.3.3-<COLOR>.svg)
 
 Scripts for building debian packages for PeachCloud microservices.
 

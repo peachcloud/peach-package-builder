@@ -28,8 +28,8 @@ def build_peach_config(default_branch=True):
     if default_branch:
         # because some repo have main as default and some as master, we get the default
         default_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD'],
-                                                 cwd=service_path).decode(sys.stdout.encoding)
-        branch = default_branch.replace('origin/', '').strip()
+                                                 cwd=service_path).decode(sys.stdout.encoding).strip()
+        branch = default_branch.replace('origin/', '')
         subprocess.check_call(["git", "checkout", branch], cwd=service_path)
         subprocess.check_call(["git", "fetch", "--all"], cwd=service_path)
         subprocess.check_call(["git", "reset", "--hard", default_branch], cwd=service_path)
