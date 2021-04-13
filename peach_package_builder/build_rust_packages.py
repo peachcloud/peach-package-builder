@@ -31,13 +31,12 @@ def build_rust_packages(default_branch=False):
         print("[ BUILIDING SERVICE {} ]".format(service_name))
         # this arg ensures we build the default branch, otherwise we build what ever is found locally
         if default_branch:
-            # because some repo have main as default and some as master, we get the default
-            default_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD'],
-                                                     cwd=service_path).decode(sys.stdout.encoding).strip()
-            branch = default_branch.replace('origin/', '')
+            remote_branch = 'origin/main'
+            branch = 'main'
+            subprocess.check_call(["git", "reset", "HEAD", "--hard"])
             subprocess.check_call(["git", "checkout", branch], cwd=service_path)
             subprocess.check_call(["git", "fetch", "--all"], cwd=service_path)
-            subprocess.check_call(["git", "reset", "--hard", default_branch], cwd=service_path)
+            subprocess.check_call(["git", "reset", "--hard", remote_branch], cwd=service_path)
         debian_package_path = subprocess.check_output(
             [
                 CARGO_PATH,
