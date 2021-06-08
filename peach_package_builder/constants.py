@@ -30,5 +30,5 @@ SERVICES = [
     {"name": "peach-stats", "repo_url": "https://github.com/peachcloud/peach-stats.git"},
     {"name": "peach-probe", "repo_url": "https://github.com/peachcloud/peach-probe.git"},
     {"name": "peach-dyndns-updater", "repo_url": "https://github.com/peachcloud/peach-dyndns-updater.git"},
-    # {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"}, # currently build fails because it needs rust nightly for pear
+    {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"},
 ]
