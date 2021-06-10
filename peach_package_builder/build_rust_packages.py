@@ -20,12 +20,19 @@ def add_debs_dir_to_freight():
     update_freight_cache()
 
 
-def build_rust_packages(default_branch=False):
+def build_rust_packages(default_branch=False, package=None):
     """
     builds all PeachCloud microservices written in rust and copies them to MICROSERVICES_DEB_DIR
+    :param default_branch: checks out main git branch if True
+    :param package: if provided, only builds this package
     """
     print("[ BUILDING AND UPDATING RUST MICROSERVICE PACKAGES ]")
-    for service in SERVICES:
+    # if package argument was provided, then only build that one package, otherwise build all packages
+    if package:
+        services = filter(lambda s: s["name"] == package, SERVICES)
+    else:
+        services = SERVICES
+    for service in services:
         service_name = service["name"]
         service_path = os.path.join(MICROSERVICES_SRC_DIR, service_name)
         print("[ BUILIDING SERVICE {} ]".format(service_name))
@@ -46,8 +53,12 @@ def build_rust_packages(default_branch=False):
             cwd=service_path).decode("utf-8").strip()
         subprocess.call(["cp", debian_package_path, MICROSERVICES_DEB_DIR])
 
-    # this function adds all .deb files in MICROSERVICES_DEB_DIR to freight
-    add_debs_dir_to_freight()
+        # add deb to freight
+        package_name = os.path.basename(debian_package_path)
+        add_deb_to_freight(package_name=package_name, package_path=debian_package_path)
+
+    # update freight cache
+    update_freight_cache()
 
 
 def build_packages(default_branch=False):

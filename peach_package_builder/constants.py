@@ -31,4 +31,5 @@ SERVICES = [
     {"name": "peach-probe", "repo_url": "https://github.com/peachcloud/peach-probe.git"},
     {"name": "peach-dyndns-updater", "repo_url": "https://github.com/peachcloud/peach-dyndns-updater.git"},
     {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"},
+    {"name": "peach-tbot", "repo_url": "https://github.com/peachcloud/peach-tbot.git"},
 ]

@@ -1,6 +1,6 @@
 # peach-package-builder
 
-![Generic badge](https://img.shields.io/badge/version-0.3.4-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.3.5-<COLOR>.svg)
 
 Scripts for building debian packages for PeachCloud microservices.
 
@@ -61,7 +61,7 @@ The script currently performs the following actions:
  - Adds packages to Freight cache
 
 ```
-python3 -d peach_package_builder/build_packages.py
+python3 peach_package_builder/build_packages.py -d
 ```
 
 The -d flag ensures that all packages are built from the latest version of the default branch currently on GitHub. 
@@ -69,11 +69,8 @@ Without the -d flag, whatever version of the code is locally stored will be used
 
 Freight supports the ability to have multiple versions of a package in a single Debian package archive. If a particular version of a package already exists in the Freight library, it will not be readded or overwritten.
 
-You can also just build the rust packages by running:
-```python3 -d peach_package_builder/build_rust_packages.py```
-
-Or just build peach-config by running:
-```python3 -d peach_package_builder/build_peach_config.py```
+You can also just build a single package by running (e.g. peach-web, peach-config, etc.):
+```python3 peach_package_builder/build_packages.py -d -p package-name```
 
 
 ## Build peach-go-sbot package
