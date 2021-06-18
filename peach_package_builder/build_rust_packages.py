@@ -44,6 +44,11 @@ def build_rust_packages(default_branch=False, package=None):
             subprocess.check_call(["git", "checkout", branch], cwd=service_path)
             subprocess.check_call(["git", "fetch", "--all"], cwd=service_path)
             subprocess.check_call(["git", "reset", "--hard", remote_branch], cwd=service_path)
+        # for packages which depend on peach-lib (peach-web and peach-dyndns-udpater)
+        # run cargo update, so that we get the latest peach-lib version from git
+        if service_name in ["peach-web", "peach-dyndns-updater"]:
+            subprocess.check_call([CARGO_PATH, "update"], cwd=service_path)
+        # build debian pacakge
         debian_package_path = subprocess.check_output(
             [
                 CARGO_PATH,

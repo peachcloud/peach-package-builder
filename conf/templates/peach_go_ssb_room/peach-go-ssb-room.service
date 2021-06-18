@@ -1,0 +1,12 @@
+[Unit]
+Description=peachs go-sbot
+
+[Service]
+Type=simple
+User=peach-go-ssb-room
+Environment="GO_HTTPS_DOMAIN=littleorchard.dyn.peachcloud.org"
+ExecStart=/usr/bin/go-ssb-room-server -https-domain "$GO_HTTPS_DOMAIN" -lishttp ":3001" -lismux ":8009"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
