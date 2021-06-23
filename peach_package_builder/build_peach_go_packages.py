@@ -15,7 +15,7 @@ from peach_package_builder.utils import render_template, add_deb_to_freight, upd
 
 # manually update this version when we want to build a new peach-go-sbot package
 PEACH_GO_SBOT_VERSION = '0.1.5'
-PEACH_GO_SSB_ROOM_VERSION = '0.1.7'
+PEACH_GO_SSB_ROOM_VERSION = '0.1.12'
 
 
 def crosscompile_peach_go_sbot(src_dir):
@@ -32,6 +32,10 @@ def crosscompile_peach_go_ssb_room(src_dir):
     subprocess.check_call(["env", "CGO_ENABLED=1", "CC=aarch64-linux-gnu-gcc",
                            "CC_FOR_TARGET=gcc-aarch64-linux-gnu", "GOOS=linux",
                            "GOARCH=arm64", "go", "build", "./cmd/server"], cwd=src_dir)
+    print("[CROSS-COMPILING go-ssb-room/insert-user]")
+    subprocess.check_call(["env", "CGO_ENABLED=1", "CC=aarch64-linux-gnu-gcc",
+                           "CC_FOR_TARGET=gcc-aarch64-linux-gnu", "GOOS=linux",
+                           "GOARCH=arm64", "go", "build", "./cmd/insert-user"], cwd=src_dir)
 
 
 def package_go_package(src_dir, package_name, deb_conf_dir, build_dir, go_binary_names, version):
@@ -122,7 +126,7 @@ def build_peach_go_ssb_room():
     DEB_BUILD_DIR = "/tmp/peach_go_ssb_room"
     # GO_BINARIES is a list of tuples of src_name and dest_name,
     # which will be callable via /usr/bin/dest_name after installation
-    GO_BINARIES = [('server', 'go-ssb-room-server')]
+    GO_BINARIES = [('server', 'go-ssb-room'), ('insert-user', 'go-ssb-room-insert-user')]
     SRC_DIR = "/srv/peachcloud/automation/go-ssb-room"
 
     # gets the most recently built peach_go_sbot version, and increments the micro-number by 1
@@ -145,6 +149,6 @@ def build_peach_go_ssb_room():
 
 
 if __name__ == '__main__':
-    # build_peach_go_sbot()
+    build_peach_go_sbot()
     build_peach_go_ssb_room()
 

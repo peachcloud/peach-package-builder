@@ -2,10 +2,12 @@
 set -e
 
 # create user which go-ssb-room runs as
-adduser --quiet --system peach-go-ssb-room
+adduser --system --quiet --home /var/lib/go-ssb-room peach-go-ssb-room
+mkdir -p /var/lib/peachcloud/go-ssb-room
 
 # set permissions
-chown peach-go-ssb-room /usr/bin/go-ssb-room-server
+chown peach-go-ssb-room /var/lib/peachcloud/go-ssb-room
+chown peach-go-ssb-room /usr/bin/go-ssb-room
 
 # Automatically added by cargo-deb
 if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then

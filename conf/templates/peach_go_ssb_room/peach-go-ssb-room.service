@@ -1,12 +1,16 @@
 [Unit]
-Description=peachs go-sbot
+Description="peach-go-ssb-room service"
+After=network.target
+After=nginx.target
+Wants=nginx.target
 
 [Service]
-Type=simple
-User=peach-go-ssb-room
-Environment="GO_HTTPS_DOMAIN=littleorchard.dyn.peachcloud.org"
-ExecStart=/usr/bin/go-ssb-room-server -https-domain "$GO_HTTPS_DOMAIN" -lishttp ":3001" -lismux ":8009"
+# TODO: dynamically replace roomtest2.commoninternet.net
+ExecStart=/usr/bin/go-ssb-room -repo /var/lib/peachcloud/go-ssb-room -lishttp localhost:8899 -https-domain roomtest2.commoninternet.net
+WorkingDirectory=/var/lib/peachcloud/go-ssb-room
 Restart=always
+SyslogIdentifier=gossbroom
+User=peach-go-ssb-room
 
 [Install]
 WantedBy=multi-user.target
