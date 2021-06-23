@@ -1,0 +1,5 @@
+Package: peach-go-ssb-room
+Version: {{version}}
+Architecture: all
+Maintainer: Andrew Reid <gnomad@cryptolab.net>
+Description: debian package for go-ssb-room on arm64

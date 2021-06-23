@@ -1,0 +1,16 @@
+[Unit]
+Description="peach-go-ssb-room service"
+After=network.target
+After=nginx.target
+Wants=nginx.target
+
+[Service]
+# TODO: dynamically replace roomtest2.commoninternet.net
+ExecStart=/usr/bin/go-ssb-room -repo /var/lib/peachcloud/go-ssb-room -lishttp localhost:8899 -https-domain roomtest2.commoninternet.net
+WorkingDirectory=/var/lib/peachcloud/go-ssb-room
+Restart=always
+SyslogIdentifier=gossbroom
+User=peach-go-ssb-room
+
+[Install]
+WantedBy=multi-user.target

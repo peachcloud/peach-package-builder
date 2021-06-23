@@ -1,0 +1,41 @@
+#!/bin/sh
+set -e
+
+# create user which go-ssb-room runs as
+adduser --system --quiet --home /var/lib/go-ssb-room peach-go-ssb-room
+mkdir -p /var/lib/peachcloud/go-ssb-room
+
+# set permissions
+chown peach-go-ssb-room /var/lib/peachcloud/go-ssb-room
+chown peach-go-ssb-room /usr/bin/go-ssb-room
+
+# Automatically added by cargo-deb
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+	# This will only remove masks created by d-s-h on package removal.
+	deb-systemd-helper unmask peach-go-ssb-room.service >/dev/null || true
+
+	# was-enabled defaults to true, so new installations run enable.
+	if deb-systemd-helper --quiet was-enabled peach-go-ssb-room.service; then
+		# Enables the unit on first installation, creates new
+		# symlinks on upgrades if the unit file has changed.
+		deb-systemd-helper enable peach-go-ssb-room.service >/dev/null || true
+	else
+		# Update the statefile to add new symlinks (if any), which need to be
+		# cleaned up on purge. Also remove old symlinks.
+		deb-systemd-helper update-state peach-go-ssb-room.service >/dev/null || true
+	fi
+fi
+# End automatically added section
+# Automatically added by cargo-deb
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+	if [ -d /run/systemd/system ]; then
+		systemctl --system daemon-reload >/dev/null || true
+		if [ -n "$2" ]; then
+			_dh_action=restart
+		else
+			_dh_action=start
+		fi
+		deb-systemd-invoke $_dh_action peach-go-ssb-room.service >/dev/null || true
+	fi
+fi
+# End automatically added section
