@@ -1,3 +1,7 @@
+⚠️ This repo is no longer active and has been archived. The active repo can be found at https://git.coopcloud.tech/PeachCloud/peach-package-builder ⚠️
+
+-----
+
 # peach-package-builder
 
 ![Generic badge](https://img.shields.io/badge/version-0.3.5-<COLOR>.svg)
